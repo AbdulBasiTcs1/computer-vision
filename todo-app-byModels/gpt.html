@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>To-Do</title>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --panel: #151923;
+    --panel-soft: #1b2130;
+    --accent: #7c9cff;
+    --accent-soft: #a8bbff;
+    --text: #e8ecf3;
+    --muted: #8c93a8;
+    --danger: #ff6b6b;
+    --success: #4ade80;
+    --radius: 16px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(circle at 20% 20%, #141824, #0d0f14 60%);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  h1 {
+    margin: 0 0 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .card {
+    background: var(--panel);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  }
+
+  .input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  input {
+    flex: 1;
+    background: var(--panel-soft);
+    border: none;
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 10px;
+    outline: none;
+    font-size: 14px;
+  }
+
+  input::placeholder {
+    color: var(--muted);
+  }
+
+  input:focus {
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  button {
+    background: var(--accent);
+    border: none;
+    color: white;
+    padding: 0 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px white, 0 0 0 4px var(--accent);
+  }
+
+  .filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .filter {
+    flex: 1;
+    padding: 8px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+  }
+
+  .filter.active {
+    background: var(--panel-soft);
+    color: var(--text);
+    border-color: #2a3145;
+  }
+
+  .filter:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  .list {
+    margin-top: 10px;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border-radius: 10px;
+    transition: background 0.2s, transform 0.15s;
+  }
+
+  .item:hover {
+    background: var(--panel-soft);
+  }
+
+  .item.completed span {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+
+  .item span {
+    cursor: pointer;
+    flex: 1;
+  }
+
+  .item span:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent);
+    border-radius: 6px;
+  }
+
+  .delete {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .delete:hover {
+    color: var(--danger);
+  }
+
+  .footer {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .empty {
+    text-align: center;
+    padding: 30px 10px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .celebrate {
+    text-align: center;
+    margin-top: 16px;
+    font-weight: 500;
+    color: var(--success);
+    opacity: 0;
+    transform: scale(0.9);
+    pointer-events: none;
+  }
+
+  .celebrate.show {
+    animation: pop 0.5s ease forwards;
+  }
+
+  @keyframes pop {
+    0% { opacity: 0; transform: scale(0.85);}
+    60% { opacity: 1; transform: scale(1.05);}
+    100% { opacity: 1; transform: scale(1);}
+  }
+
+  .checkmark {
+    display: inline-block;
+    margin-right: 6px;
+    transform: scale(0);
+  }
+
+  .item.completed .checkmark {
+    animation: check 0.3s ease forwards;
+  }
+
+  @keyframes check {
+    to { transform: scale(1); }
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 20px 10px; }
+    .card { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>Tasks</h1>
+  <div class="card">
+    <div class="input-row">
+      <input id="input" placeholder="Add a task..." />
+      <button id="addBtn">Add</button>
+    </div>
+
+    <div class="filters">
+      <button class="filter active" data-filter="all">All</button>
+      <button class="filter" data-filter="active">Active</button>
+      <button class="filter" data-filter="done">Done</button>
+    </div>
+
+    <div id="list" class="list"></div>
+
+    <div id="empty" class="empty">No tasks yet. Add something meaningful.</div>
+
+    <div class="footer">
+      <span id="count">0</span> tasks left
+    </div>
+
+    <div id="celebrate" class="celebrate">✔ Nice work, tasks complete!</div>
+  </div>
+</div>
+
+<script>
+  const input = document.getElementById('input');
+  const addBtn = document.getElementById('addBtn');
+  const list = document.getElementById('list');
+  const count = document.getElementById('count');
+  const empty = document.getElementById('empty');
+  const celebrate = document.getElementById('celebrate');
+  const filters = document.querySelectorAll('.filter');
+
+  let tasks = [];
+  let filter = 'all';
+
+  function render() {
+    list.innerHTML = '';
+
+    let filtered = tasks.filter(t => {
+      if (filter === 'active') return !t.done;
+      if (filter === 'done') return t.done;
+      return true;
+    });
+
+    empty.style.display = filtered.length === 0 ? 'block' : 'none';
+
+    filtered.forEach(task => {
+      const div = document.createElement('div');
+      div.className = 'item' + (task.done ? ' completed' : '');
+
+      const span = document.createElement('span');
+      span.tabIndex = 0;
+      span.innerHTML = '<span class="checkmark">✔</span>' + task.text;
+      span.onclick = () => toggle(task.id);
+      span.onkeypress = (e) => { if (e.key === 'Enter') toggle(task.id); };
+
+      const del = document.createElement('button');
+      del.className = 'delete';
+      del.innerHTML = '✕';
+      del.onclick = () => remove(task.id);
+
+      div.appendChild(span);
+      div.appendChild(del);
+      list.appendChild(div);
+    });
+
+    count.textContent = tasks.filter(t => !t.done).length;
+
+    if (tasks.length && tasks.every(t => t.done)) {
+      celebrate.classList.add('show');
+    } else {
+      celebrate.classList.remove('show');
+    }
+  }
+
+  function addTask() {
+    const text = input.value.trim();
+    if (!text) return;
+    tasks.push({ id: Date.now(), text, done: false });
+    input.value = '';
+    render();
+  }
+
+  function toggle(id) {
+    tasks = tasks.map(t => t.id === id ? {...t, done: !t.done} : t);
+    render();
+  }
+
+  function remove(id) {
+    tasks = tasks.filter(t => t.id !== id);
+    render();
+  }
+
+  addBtn.onclick = addTask;
+  input.addEventListener('keypress', e => {
+    if (e.key === 'Enter') addTask();
+  });
+
+  filters.forEach(btn => {
+    btn.onclick = () => {
+      filters.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filter = btn.dataset.filter;
+      render();
+    };
+  });
+
+  render();
+</script>
+</body>
+</html>

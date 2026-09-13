@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tasks</title>
+<style>
+  :root{
+    --bg: #12161a;
+    --bg-soft: #171c21;
+    --surface: #1b2126;
+    --border: #2a3138;
+    --border-soft: #232a30;
+    --text: #e9e6de;
+    --text-dim: #8b939a;
+    --text-faint: #565f66;
+    --accent: #cf9d54;
+    --accent-soft: #7d6238;
+    --accent-glow: rgba(207, 157, 84, 0.16);
+    --danger: #b3695a;
+    --radius: 3px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0;
+    padding:0;
+    min-height:100vh;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(207,157,84,0.05), transparent 40%),
+      radial-gradient(circle at 90% 90%, rgba(207,157,84,0.03), transparent 45%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection{ background: var(--accent-soft); color: #12161a; }
+
+  body{
+    display:flex;
+    justify-content:center;
+    padding: 64px 20px 100px;
+  }
+
+  .sheet{
+    width: 100%;
+    max-width: 560px;
+  }
+
+  /* ---------- Header ---------- */
+
+  header{
+    margin-bottom: 34px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap: 16px;
+    position:relative;
+  }
+
+  h1{
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+    font-weight: 400;
+    font-size: 34px;
+    letter-spacing: 0.2px;
+    margin:0;
+    color: var(--text);
+  }
+
+  .count{
+    font-size: 13.5px;
+    color: var(--text-dim);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    padding-bottom: 4px;
+  }
+
+  .count strong{
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ---------- Input row ---------- */
+
+  .composer{
+    display:flex;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .composer input[type="text"]{
+    flex:1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 15.5px;
+    font-family: inherit;
+    padding: 13px 16px;
+    border-radius: var(--radius);
+    outline: none;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .composer input[type="text"]::placeholder{
+    color: var(--text-faint);
+  }
+
+  .composer input[type="text"]:focus{
+    border-color: var(--accent-soft);
+    background: var(--bg-soft);
+  }
+
+  .composer input[type="text"]:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .composer button{
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14.5px;
+    padding: 0 20px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+
+  .composer button:hover{
+    border-color: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .composer button:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .composer button:active{
+    transform: translateY(1px);
+  }
+
+  /* ---------- Filter tabs ---------- */
+
+  .tabs{
+    display:flex;
+    gap: 22px;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 6px;
+  }
+
+  .tabs button{
+    background:none;
+    border:none;
+    color: var(--text-faint);
+    font-family: inherit;
+    font-size: 13.5px;
+    padding: 0 0 11px;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.15s ease;
+  }
+
+  .tabs button:hover{
+    color: var(--text-dim);
+  }
+
+  .tabs button.active{
+    color: var(--text);
+  }
+
+  .tabs button.active::after{
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:-1px;
+    height:2px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .tabs button:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* ---------- Celebration banner ---------- */
+
+  .celebration{
+    position: relative;
+    overflow: hidden;
+    text-align:center;
+    padding: 26px 16px 22px;
+    margin: 22px 0 4px;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, rgba(207,157,84,0.07), transparent);
+    display:none;
+  }
+
+  .celebration.show{
+    display:block;
+    animation: reveal 0.55s cubic-bezier(.2,.8,.2,1);
+  }
+
+  @keyframes reveal{
+    0%{ opacity:0; transform: scale(0.94) translateY(4px); }
+    100%{ opacity:1; transform: scale(1) translateY(0); }
+  }
+
+  .celebration .mark{
+    font-family: Georgia, "Iowan Old Style", serif;
+    font-size: 20px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .celebration .sub{
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .fleck{
+    position:absolute;
+    top: -10px;
+    width: 6px;
+    height: 10px;
+    background: var(--accent);
+    opacity: 0.85;
+    border-radius: 1px;
+    animation: fall 1.6s ease-in forwards;
+  }
+
+  @keyframes fall{
+    0%{ transform: translateY(0) rotate(0deg); opacity: 0.9; }
+    100%{ transform: translateY(90px) rotate(200deg); opacity: 0; }
+  }
+
+  /* ---------- List ---------- */
+
+  ul.list{
+    list-style:none;
+    margin:0;
+    padding:0;
+  }
+
+  li.task{
+    display:flex;
+    align-items:flex-start;
+    gap: 14px;
+    padding: 16px 2px;
+    border-top: 1px solid var(--border-soft);
+    cursor: pointer;
+    position: relative;
+  }
+
+  li.task:last-child{
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  li.task.entering{
+    animation: enter 0.32s cubic-bezier(.2,.8,.2,1);
+  }
+
+  @keyframes enter{
+    0%{ opacity:0; transform: translateY(-6px); }
+    100%{ opacity:1; transform: translateY(0); }
+  }
+
+  li.task.leaving{
+    animation: leave 0.22s ease forwards;
+  }
+
+  @keyframes leave{
+    0%{ opacity:1; max-height: 80px; }
+    100%{ opacity:0; max-height: 0; padding-top:0; padding-bottom:0; margin:0; }
+  }
+
+  .check{
+    flex-shrink:0;
+    width: 20px;
+    height: 20px;
+    margin-top: 3px;
+    border-radius: 50%;
+    border: 1.5px solid var(--text-faint);
+    position: relative;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  li.task:hover .check{
+    border-color: var(--accent-soft);
+  }
+
+  li.task.done .check{
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .check svg{
+    position:absolute;
+    top:2px; left:2px;
+    width: 13px;
+    height: 13px;
+    stroke: var(--bg);
+    stroke-width: 2.4;
+    fill:none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+  }
+
+  li.task.done .check svg{
+    animation: draw 0.32s ease forwards 0.03s;
+  }
+
+  @keyframes draw{
+    to{ stroke-dashoffset: 0; }
+  }
+
+  .task-text{
+    flex:1;
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+    font-size: 16.5px;
+    line-height: 1.5;
+    color: var(--text);
+    padding-top: 1px;
+    word-break: break-word;
+    position: relative;
+  }
+
+  li.task.done .task-text{
+    color: var(--text-faint);
+  }
+
+  .task-text::after{
+    content:"";
+    position:absolute;
+    left:0;
+    top:50%;
+    height:1px;
+    width: 0%;
+    background: var(--text-faint);
+    transition: width 0.28s ease;
+  }
+
+  li.task.done .task-text::after{
+    width: 100%;
+  }
+
+  .delete-btn{
+    flex-shrink:0;
+    background:none;
+    border:none;
+    color: var(--text-faint);
+    cursor:pointer;
+    opacity:0;
+    padding: 2px 4px;
+    transition: opacity 0.15s ease, color 0.15s ease;
+    font-size: 15px;
+    line-height:1;
+    margin-top: 2px;
+  }
+
+  li.task:hover .delete-btn,
+  .delete-btn:focus-visible{
+    opacity: 1;
+  }
+
+  .delete-btn:hover{
+    color: var(--danger);
+  }
+
+  .delete-btn:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  li.task:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* ---------- Empty state ---------- */
+
+  .empty{
+    display:none;
+    text-align:center;
+    padding: 56px 20px;
+    color: var(--text-faint);
+  }
+
+  .empty.show{
+    display:block;
+  }
+
+  .empty svg{
+    margin-bottom: 14px;
+    opacity: 0.5;
+  }
+
+  .empty p{
+    margin:0;
+    font-size: 14.5px;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 480px){
+    body{ padding: 40px 16px 80px; }
+    h1{ font-size: 28px; }
+    .composer{ flex-direction: column; }
+    .composer button{ padding: 12px; }
+    .tabs{ gap: 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{
+      animation-duration: 0.001s !important;
+      transition-duration: 0.001s !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+  <header>
+    <h1>Tasks</h1>
+    <div class="count" id="count">0 open</div>
+  </header>
+
+  <form class="composer" id="composer">
+    <input type="text" id="input" placeholder="Add a task…" autocomplete="off" autofocus>
+    <button type="submit">Add</button>
+  </form>
+
+  <nav class="tabs" id="tabs">
+    <button type="button" class="active" data-filter="all">All</button>
+    <button type="button" data-filter="active">Active</button>
+    <button type="button" data-filter="done">Done</button>
+  </nav>
+
+  <div class="celebration" id="celebration">
+    <div class="mark">All done.</div>
+    <div class="sub">Nice work — every task is complete.</div>
+  </div>
+
+  <ul class="list" id="list"></ul>
+
+  <div class="empty" id="empty">
+    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="17" cy="17" r="15" stroke="#565f66" stroke-width="1.4"/>
+      <path d="M11 17H23" stroke="#565f66" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+    <p>Nothing here yet. Add your first task above.</p>
+  </div>
+
+</div>
+
+<script>
+  (function(){
+    let tasks = [];
+    let idCounter = 0;
+    let filter = 'all';
+    let celebrationShown = false;
+
+    const listEl = document.getElementById('list');
+    const emptyEl = document.getElementById('empty');
+    const countEl = document.getElementById('count');
+    const celebrationEl = document.getElementById('celebration');
+    const composerEl = document.getElementById('composer');
+    const inputEl = document.getElementById('input');
+    const tabsEl = document.getElementById('tabs');
+
+    composerEl.addEventListener('submit', function(e){
+      e.preventDefault();
+      const text = inputEl.value.trim();
+      if(!text) return;
+      tasks.push({ id: idCounter++, text: text, done: false, isNew: true });
+      inputEl.value = '';
+      hideCelebration();
+      render();
+      inputEl.focus();
+    });
+
+    tabsEl.addEventListener('click', function(e){
+      const btn = e.target.closest('button[data-filter]');
+      if(!btn) return;
+      filter = btn.dataset.filter;
+      [...tabsEl.querySelectorAll('button')].forEach(b => b.classList.toggle('active', b === btn));
+      render();
+    });
+
+    function toggleTask(id){
+      const t = tasks.find(t => t.id === id);
+      if(!t) return;
+      t.done = !t.done;
+      if(!t.done){
+        hideCelebration();
+      }
+      render();
+      if(t.done) checkAllComplete();
+    }
+
+    function deleteTask(id){
+      const li = listEl.querySelector('[data-id="' + id + '"]');
+      if(li){
+        li.classList.add('leaving');
+        setTimeout(function(){
+          tasks = tasks.filter(t => t.id !== id);
+          hideCelebration();
+          render();
+          checkAllComplete();
+        }, 200);
+      } else {
+        tasks = tasks.filter(t => t.id !== id);
+        render();
+      }
+    }
+
+    function checkAllComplete(){
+      if(tasks.length > 0 && tasks.every(t => t.done)){
+        showCelebration();
+      } else {
+        hideCelebration();
+      }
+    }
+
+    function showCelebration(){
+      if(celebrationShown) return;
+      celebrationShown = true;
+      celebrationEl.classList.add('show');
+      spawnFlecks();
+    }
+
+    function hideCelebration(){
+      celebrationShown = false;
+      celebrationEl.classList.remove('show');
+      celebrationEl.querySelectorAll('.fleck').forEach(f => f.remove());
+    }
+
+    function spawnFlecks(){
+      const colors = ['#cf9d54', '#e9e6de', '#7d6238'];
+      for(let i = 0; i < 14; i++){
+        const f = document.createElement('div');
+        f.className = 'fleck';
+        f.style.left = (5 + Math.random() * 90) + '%';
+        f.style.background = colors[i % colors.length];
+        f.style.animationDelay = (Math.random() * 0.3) + 's';
+        f.style.animationDuration = (1.2 + Math.random() * 0.7) + 's';
+        celebrationEl.appendChild(f);
+      }
+    }
+
+    function checkSvg(){
+      return '<svg viewBox="0 0 13 13"><path d="M1.5 6.5L4.8 10L11.5 2.5"/></svg>';
+    }
+
+    function render(){
+      const filtered = tasks.filter(t => {
+        if(filter === 'active') return !t.done;
+        if(filter === 'done') return t.done;
+        return true;
+      });
+
+      listEl.innerHTML = '';
+
+      filtered.forEach(function(t){
+        const li = document.createElement('li');
+        li.className = 'task' + (t.done ? ' done' : '') + (t.isNew ? ' entering' : '');
+        li.dataset.id = t.id;
+        li.tabIndex = 0;
+        li.setAttribute('role', 'button');
+        li.setAttribute('aria-pressed', t.done ? 'true' : 'false');
+
+        li.innerHTML =
+          '<span class="check">' + (t.done ? checkSvg() : '') + '</span>' +
+          '<span class="task-text"></span>' +
+          '<button type="button" class="delete-btn" aria-label="Delete task">✕</button>';
+
+        li.querySelector('.task-text').textContent = t.text;
+
+        li.addEventListener('click', function(e){
+          if(e.target.closest('.delete-btn')) return;
+          toggleTask(t.id);
+        });
+
+        li.addEventListener('keydown', function(e){
+          if(e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            toggleTask(t.id);
+          }
+        });
+
+        li.querySelector('.delete-btn').addEventListener('click', function(e){
+          e.stopPropagation();
+          deleteTask(t.id);
+        });
+
+        listEl.appendChild(li);
+        t.isNew = false;
+      });
+
+      emptyEl.classList.toggle('show', tasks.length === 0);
+
+      const openCount = tasks.filter(t => !t.done).length;
+      countEl.textContent = openCount + (openCount === 1 ? ' open' : ' open');
+    }
+
+    render();
+  })();
+</script>
+
+</body>
+</html>
