@@ -1,0 +1,2 @@
+This is the Lab 03 about : Video Processing with opencv (the lab manual of computer visison)
+
