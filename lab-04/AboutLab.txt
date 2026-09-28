@@ -1,0 +1,2 @@
+Lab 04 of Computer Vision is about : OpenCV Edge Detection and Blurring 
+

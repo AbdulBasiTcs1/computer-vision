@@ -1,0 +1,30 @@
+
+OPEN CV: GETTING READY
+======================
+
+This folder is the starting point for learning OpenCV with Python. It explains
+what OpenCV is, why it matters, where it came from, how it is used in real
+systems, and how to run your first programs.
+
+START HERE
+----------
+1. Read README.md for the learning map and quick start.
+2. Follow SETUP.md to create a virtual environment and install dependencies.
+3. Run examples/01_check_installation.py.
+4. Run examples/02_create_sample_image.py, then examples/03_image_basics.py.
+5. Read REAL_WORLD_USE_CASES.md and complete EXERCISES.md.
+
+CONTENTS
+--------
+README.md                  Course overview and quick start
+SETUP.md                   Windows, macOS, and Linux setup
+OPENCV_FOUNDATIONS.md      History, concepts, and important terminology
+REAL_WORLD_USE_CASES.md    Practical applications and limitations
+LEARNING_PATH.md           Suggested progression after this module
+EXERCISES.md               Beginner exercises and checkpoints
+requirements.txt           Python packages for these examples
+examples/                  Small, runnable OpenCV programs
+mini_project/              A practical color-object detection example
+
+The examples are intentionally small. Each one demonstrates one idea that can
+be reused in later computer-vision labs.
