@@ -16,6 +16,8 @@ Use `cv2.VideoCapture`, process frames in a loop, control frame rate, release re
 
 Study template matching, feature matching, optical flow, background subtraction, object trackers, and the difference between detection and tracking.
 
+Try the [Hough line and circle detection and crowd face detection lesson](../1-Getting-Started-With-OpenCV/README.md) for edge-based geometry and a separate learned face detector.
+
 ## Stage 5: Geometry and calibration
 
 Learn camera distortion, intrinsic parameters, pose, homographies, stereo vision, and how pixel measurements relate to the physical world.
