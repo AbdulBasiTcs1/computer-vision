@@ -1,0 +1,6 @@
+method,keypoints,extract_ms,kp_per_sec,descriptor_bytes,precision,repeatability
+SIFT,654.5,121.01,5660.223,512.0,0.862,0.533
+SURF (KAZE substitute),568.0,277.566,2280.938,256.0,0.806,0.709
+BRIEF,559.0,2.597,213885.817,32.0,0.112,0.76
+ORB,886.167,6.647,142982.479,32.0,0.794,0.822
+HOG,,145.251,,138384.0,,
